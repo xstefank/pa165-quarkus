@@ -310,3 +310,14 @@ We will make our `hello-java21` the parent module and create two submodules `mod
   - removing `groupId` from the sub-modules as they are inherited from the parent (IDEA should even give you some suggestions);
   - introducing `<pluginManagement>` for the Surefire plugin in the root `pom.xml`;
   - removing any unnecessary dependency (e.g., `JUnit3` that might have been added when generating the pom files automatically) - these are not needed;
+
+
+## Task 15 Podman
+
+This task is just here to double-check that you have a valid Podman (or Docker) environment on your machine. We need this because Quarkus uses a feature (called Dev Services) that automates some of the containers running if your application needs it.  Run:
+
+```
+podman version
+```
+
+If not found - https://podman.io/docs/installation.
