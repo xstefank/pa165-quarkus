@@ -2,6 +2,8 @@
 
 This seminar shows one of the possible structures of enterprise-based projects in Quarkus using N-tier architecture. Further, it tests the usage of basic annotations and principles of injecting beans altogether.
 
+Quarkus provides a very nice set of guides for the individual features - https://quarkus.io/guides/. Feel free to use this resource during the seminar.
+
 # Tasks
 
 ## Task 1 - Clone and open the project for the Quarkus basics tasks.
@@ -52,49 +54,45 @@ The project was modified so it does not contain several required annotations to 
 3. Write in `answers.txt` what is the difference between different CDI scopes you find in your beans list above (e.g., `@ApplicationScoped`, `@RequestScoped`, ...).
 4. Write in `answers.txt` whether Quarkus creates *singleton* beans eagerly during start-up or it creates beans lazily (just when they are injected somewhere).
 
-## Task 5 - Create a custom Spring Bean
-Creation of custom beans is necessary when you want to include/create a Java object that will be managed by Spring container (Spring Bean). Using this, you can inject (@Autowire) this Bean anywhere in the project.
+## Task 5 - Create a custom Quarkus CDI Bean
+Creation of custom beans is necessary when you want to include/create a Java object that will be managed by Quarkus CDI container which is called ArC (https://quarkus.io/guides/cdi-reference). Using this, you can inject (`@Inject`) this Bean anywhere in the project.
 
-1. Add the following dependency to the `spring-basics` project (`pom.xml`):
+1. Add the following dependency to the `seminar-quarkus` project (`pom.xml`):
 
 ```xml
 <dependency>
-  <groupId>org.modelmapper</groupId>
-  <artifactId>modelmapper</artifactId>
-</dependency>
+  <groupId>io.quarkus</groupId>
+  <artifactId>quarkus-rest-jackson</artifactId>
+</dependency> 
 ```
 
-2. Create a class `ServiceConfig` under `config`. Annotate this class with `@Configuration` annotation.
-   Inside that class create a custom Bean from the ModelMapper library (`new ModelMapper()` -- [https://modelmapper.org/getting-started/](https://modelmapper.org/getting-started/)).
+If you are running Dev mode, Quarkus will automatically pick up the new dependency and download it, and restart your application.
 
-**Note** ModelMapper is one of the libraries used for mapping entities to data transfer object (DTO) classes and vice versa.
-It uses reflection that is slow. Thus, in practice prefer libraries such as `MapStruct` ([https://mapstruct.org/](https://mapstruct.org/)).
+Notice the version doesn't need to be defines because it is inherited from the Quarkus BOM defined in the same `pom.xml`. Jackson (https://github.com/FasterXML/jackson) is a very popular library for JSON serialization/deserialization that is the main JSON library used in Quarkus REST 
+layer.
 
-3. Create a custom bean in `ServiceConfig` class from one of the classes you previously annotated with `@Service`,`@Repository`, or `@RestController`.
+Dependencies in the `io.quarkus` package are also called Quarkus extensions. You can find more about available extensions here: https://quarkus.io/extensions/. There are more than 800 extensions available, so you have plenty to choose from in 
+your future projects. We can use extension and dependency in this case interchangeably.
 
-4. Write to `answers.txt` what happenes when you create two beans with the same name.
+2. Just by adding this `quarkus-rest-client` extension, Quarkus automatically serializes all our REST endpoint responses to JSON format using Jackson library. Verify this by calling the REST endpoint `GET /persons/5` in your browser or using a 
+   tool like Postman, curl, or HTTPie.
 
-**Note**: In older projects these configurations were made in `.xml` files.
-
-5. In `/src/main/resources` create `applicationContext.xml` file and fill this file with:
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-    http://www.springframework.org/schema/beans/spring-beans.xsd
-    http://www.springframework.org/schema/context
-    http://www.springframework.org/schema/context/spring-context.xsd">
-
-    <context:annotation-config/>
-    <!-- TODO add line that notifies Spring to scan "cz.muni.fi.pa165" packages-->
-</beans>
+**Note** If you are using curl (tutors prefer HTTPie), we recommend also installing `jq` (https://jqlang.org/download/) for pretty-printing JSON responses in the terminal. You should have it in your package manager. Example command:
+```shell
+$ curl -s http://localhost:8080/persons/5 | jq
 ```
-and implement the `TODO`.
 
-Change the Spring configuration class in `App` class to use this `applicationContext.xml` to scan for beans (consider: `ClassPathXmlApplicationContext`).
-This option was added just to show how it can be achieved using an .xml config.
+3. Create a custom bean that will have only one method that returns current
+   time. Make it implement the provided `TimestampService` interface. Inject
+   this bean in the `PersontResource` and add log the timestamp of the request
+   to the `findById` method. Hint Quarkus provides `Log` class with a bunch of
+   static methods.
+
+4. Write to `answers.txt` what happens when you create two beans with the same
+name. Optionally, try it by changing the injected type of your custom bean in
+`PersonResource` from previous step to the interface `TimestampService` and
+create another class implementing this interface. Annotate both classes as
+beans. Try to run the application and see what error it throws.
 
 ## Task 6 - Create and inject additional Beans
 
