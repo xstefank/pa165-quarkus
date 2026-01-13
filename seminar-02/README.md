@@ -84,47 +84,37 @@ $ curl -s http://localhost:8080/persons/5 | jq
 
 3. Create a custom bean that will have only one method that returns current
    time. Make it implement the provided `TimestampService` interface. Inject
-   this bean in the `PersontResource` and add log the timestamp of the request
+   this bean in the `PersontResource` and log the timestamp of the request
    to the `findById` method. Hint Quarkus provides `Log` class with a bunch of
    static methods.
 
 4. Write to `answers.txt` what happens when you create two beans with the same
-name. Optionally, try it by changing the injected type of your custom bean in
-`PersonResource` from previous step to the interface `TimestampService` and
-create another class implementing this interface. Annotate both classes as
-beans. Try to run the application and see what error it throws.
+name. 
 
 ## Task 6 - Create and inject additional Beans
 
 1. Create additional classes `ContactRepository`, `AddressRepository`, `ContactService`, `AddressService`.
 2. Appropriately annotate these classes.
 3. In service classes, inject repository classes (try constructor, field, and setter injection). **Note**: The best practice is constructor injection.
-4. Inject `ContactService` and `AddressService` in `PersonFacade` class via constructor injection.
+4. Inject `ContactService` and `AddressService` in `PersonFacade` class via constructor injection in the `PersonResource` class (change it from field to the constructor injection).
 
-## Task 7 - Improve project start-up
-
-Modify `@ComponentScan` annotation in (`App` class) so it scans only suitable packages (e.g., omit `api` package with DTO classes).
-
-## Task 8 - Create additional Bean implementations
+## Task 7 - Create additional Bean implementations
 
 1. Create another class named `PersonService` in a new package with arbitrary name.
 2. Annotate this class suitably so the code does not fail in runtime.
-3. Try to inject that class in `PersonFacade`. **Note**: Check `@Qualifier` annotation and declaration of custom bean names.
+3. Try to inject that class in `PersonFacade`. **Note**: Check `@Qualifier` and `@Named` annotations and declaration of custom bean names.
 
-## Task 9 - Transactions
+## Task 8 - Transactions
 
 1. Check method chain for `findById` (in `PersonFacade` and `PersonService` classes). How many transactions are created when `@Transactional` annotation is added above `findById` method in both classes?
-2. Set the `@Transactional` annotation so the `findById` method in PersonService creates a new transaction.
+2. Add `@Transactional` annotation above `findById` method in `PersonFacade` class.
+3. Set the `@Transactional` annotation so the `findById` method in `PersonService` creates a new transaction.
 
-**Note**:
-- Check `isolation` and `propagation` options for Spring transactions.
-- To apply the transactional logic behind `@Transactional` annotation, it's essential to add `@EnableTransactionManagement` to the Spring configuration class.
+## Task 9 - Create methods for `Address`
 
-## Task 10 - Create methods for `Address`
+Create `findById` method for repository, service, facade, and rest layer for `Address` class (do it analogously as it is for `Person`).
 
-Create `findById` method for repository, service, facade, and rest layer for `Address` class (do it analogously as it is for Person).
-
-## Task 11 - Dependencies and its licenses
+## Task 10 - Dependencies and its licenses
 
 In an enterprise-based project, it's crucial to check the licenses of used libraries so they do not break any company-defined rules.
 
@@ -133,8 +123,8 @@ In the project root directory run the following command in terminal:
 $ mvn project-info-reports:dependencies
 ```
 
-Go to the `target/site` folder and open `dependencies.html` in your browser of choice and check used libraries and their licenses.
+Go to the `target/reports` folder and open `dependencies.html` in your browser of choice and check used libraries and their licenses.
 
-## Task 12 - Optional task (mapping entities to DTOs and vice versa)
+## Task 11 - Optional task (mapping entities to DTOs and vice versa)
 
-Use ModelMapper library that you previously integrated to map domain classes to your DTO classes.
+Use ModelMapper library (https://mapstruct.org/news/2019-12-06-mapstruct-and-quarkus/) to map domain classes to your DTO classes.
