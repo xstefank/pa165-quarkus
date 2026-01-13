@@ -47,9 +47,10 @@ The project was modified so it does not contain several required annotations to 
 
 ## Task 4 - Check created Beans
 
-1. Implement a function in the main method (`App` class) that will print all the created beans.
-2. Write in `answers.txt` what is the default Bean naming that Spring applies.
-3. Write in `answers.txt` whether Spring creates singleton beans eagerly during start-up or it creates beans lazily (just when they are injected somewhere).
+1. The easiest way is to open the Dev UI in your browser. Find where it is running and different ways how you can open it. Document these ways and the URL of where we can check all created beans in `answers.txt`. 
+2. Optionally, implement also finding of all beans programmatically in the `StartupObserver#onStart` method. Hint: `Arc.container().beanManager().getBeans`.
+3. Write in `answers.txt` what is the difference between different CDI scopes you find in your beans list above (e.g., `@ApplicationScoped`, `@RequestScoped`, ...).
+4. Write in `answers.txt` whether Quarkus creates *singleton* beans eagerly during start-up or it creates beans lazily (just when they are injected somewhere).
 
 ## Task 5 - Create a custom Spring Bean
 Creation of custom beans is necessary when you want to include/create a Java object that will be managed by Spring container (Spring Bean). Using this, you can inject (@Autowire) this Bean anywhere in the project.
