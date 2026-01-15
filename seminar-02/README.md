@@ -89,14 +89,14 @@ $ curl -s http://localhost:8080/persons/5 | jq
 
 ## Task 6 - Create and inject additional Beans
 
-1. Create additional classes `ContactRepository`, `AddressRepository`, `ContactService`, `AddressService`.
+1. Create additional classes `AddressRepository` and `AddressService`.
 2. Appropriately annotate these classes.
-3. In service classes, inject repository classes (try constructor, field, and setter injection). **Note**: The best practice is constructor injection.
-4. Inject `ContactService` and `AddressService` in `PersonFacade` class via constructor injection in the `PersonResource` class (change it from field to the constructor injection).
+3. In the service class, inject the repository class (try constructor, field, and setter injection). **Note**: The best practice is constructor injection.
+4. Inject `AddressService` in `PersonFacade` class via constructor injection in the `PersonResource` class.
 
 ## Task 7 - Create additional Bean implementations
 
-1. Create another class named `PersonService` in a new package with arbitrary name.
+1. Create another class that extends `PersonService` in a new package with arbitrary name and make it also a CDI bean.
 2. Annotate this class suitably so the code does not fail in runtime.
 3. Try to inject that class in `PersonFacade`. **Note**: Check `@Qualifier` and `@Named` annotations and declaration of custom bean names.
 
@@ -108,7 +108,8 @@ $ curl -s http://localhost:8080/persons/5 | jq
 
 ## Task 9 - Create methods for `Address`
 
-Create `findById` method for repository, service, facade, and rest layer for `Address` class (do it analogously as it is for `Person`).
+1. Create `findById` method for repository, service, facade, and rest layer for `Address` class (do it analogously as it is for `Person`).
+2. Create a sample (or more) `Address` entity in the `InsertInitialDataService` class.
 
 ## Task 10 - Dependencies and its licenses
 
