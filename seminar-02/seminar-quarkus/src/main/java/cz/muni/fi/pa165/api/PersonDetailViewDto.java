@@ -1,11 +1,14 @@
 package cz.muni.fi.pa165.api;
 
+import java.time.Instant;
+
 public class PersonDetailViewDto {
 
     private Long id;
     private String email;
     private String givenName;
     private String familyName;
+    private Instant viewGeneratedAt;
 
     public Long getId() {
         return id;
@@ -39,13 +42,22 @@ public class PersonDetailViewDto {
         this.familyName = familyName;
     }
 
+    public Instant getViewGeneratedAt() {
+        return viewGeneratedAt;
+    }
+
+    public void setViewGeneratedAt(Instant viewGeneratedAt) {
+        this.viewGeneratedAt = viewGeneratedAt;
+    }
+
     @Override
     public String toString() {
         return "PersonDetailViewDto{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", givenName='" + givenName + '\'' +
-                ", familyName='" + familyName + '\'' +
-                '}';
+            "id=" + id +
+            ", email='" + email + '\'' +
+            ", givenName='" + givenName + '\'' +
+            ", familyName='" + familyName + '\'' +
+            ", viewGeneratedAt=" + viewGeneratedAt +
+            '}';
     }
 }

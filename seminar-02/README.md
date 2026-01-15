@@ -33,7 +33,7 @@ It's a good idea to put the `module add` command into your `~/.bashrc`.
 
 3. Create a file named `answers.txt` and write down the benefits of N-tier architecture for enterprise-based projects. Optionally, you can also mention drawbacks of this architecture.
 
-**Note**: this file will be used for the follow-up answers, so do not delete it).
+**Note**: this file will be used for the follow-up answers, so do not delete it.
 
 ## Task 3 - Run and fix the project
 
@@ -74,7 +74,7 @@ layer.
 Dependencies in the `io.quarkus` package are also called Quarkus extensions. You can find more about available extensions here: https://quarkus.io/extensions/. There are more than 800 extensions available, so you have plenty to choose from in 
 your future projects. We can use extension and dependency in this case interchangeably.
 
-2. Just by adding this `quarkus-rest-client` extension, Quarkus automatically serializes all our REST endpoint responses to JSON format using Jackson library. Verify this by calling the REST endpoint `GET /persons/5` in your browser or using a 
+2. Just by adding this `quarkus-rest-jackson` extension, Quarkus automatically serializes all our REST endpoint responses to JSON format using Jackson library. Verify this by calling the REST endpoint `GET /persons/5` in your browser or using a 
    tool like Postman, curl, or HTTPie.
 
 **Note** If you are using curl (tutors prefer HTTPie), we recommend also installing `jq` (https://jqlang.org/download/) for pretty-printing JSON responses in the terminal. You should have it in your package manager. Example command:
@@ -82,14 +82,10 @@ your future projects. We can use extension and dependency in this case interchan
 $ curl -s http://localhost:8080/persons/5 | jq
 ```
 
-3. Create a custom bean that will have only one method that returns current
-   time. Make it implement the provided `TimestampService` interface. Inject
-   this bean in the `PersontResource` and log the timestamp of the request
-   to the `findById` method. Hint Quarkus provides `Log` class with a bunch of
-   static methods.
-
-4. Write to `answers.txt` what happens when you create two beans with the same
-name. 
+3. As you can see, the `PersonDetailViewDto` class contains a field `viewGeneratedAt` of type `Instant` which is currently not populated (it's `null`). You have two options:
+   1. Easier - create a new bean that will provide the current date. Inject this bean in the `PersonFacade` class and use it to set the `viewGeneratedAt` field in the `findById` method.
+   1. Harder - create a custom Jackson `ObjectMapperCustomizer` implementation which you register as a CDI bean for Quarkus to pick up. This bean should filter all `null` values so they are omitted from the serialization (hint: `objectMapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL)`) See https://quarkus.io/guides/rest-json#json. 
+4. Write to `answers.txt` what happens when you create two beans with the same name. 
 
 ## Task 6 - Create and inject additional Beans
 
