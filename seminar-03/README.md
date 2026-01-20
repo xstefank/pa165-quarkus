@@ -202,7 +202,7 @@ setting the property naming strategy to SNAKE_CASE. You can verify this change, 
 ## Task 5 - Run the project with externalized properties
 
 Investigate the property `quarkus.config.locations` and run the project in command line (`java -D... -jar ...`)  with the externalized property
-file located in the `/etc` folder in the project root directory (**Note:** it can be located anywhere in the system). **Do not add** the property to the properties file. If everything goes well, the application should run on port `8081`. It should also be darker :evil_laugh:!
+file located in the `/etc` folder in the project root directory (**Note:** it can be located anywhere in the system). **Do not add** the property to the properties file. If everything goes well, the application should run on port `8081`. It should also be darker :metal:!
 
 Verify that you run the service with externalized property file by visiting the site:
 
