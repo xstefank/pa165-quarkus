@@ -15,8 +15,4 @@ public interface PersonMapper {
     PersonDetailedViewDto mapToDetailViewDto(Person person);
 
     List<PersonBasicViewDto> mapToList(List<Person> persons);
-
-//    default List<PersonBasicViewDto> mapToListDto(List<Person> persons) {
-//        return new PageImpl<>(mapToList(persons.getContent()), persons.getPageable(), persons.getTotalPages());
-//    }
 }

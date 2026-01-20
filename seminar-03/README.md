@@ -1,6 +1,6 @@
 # Seminar Quarkus Continued
 
-This seminar demonstrates the creation of a basic Quarkus project vie the generator website, 
+This seminar demonstrates the creation of a basic Quarkus project via the generator website, 
 the configuration of custom annotations, and the basics of all the Developer experience enhancements that Quarkus provides.
 
 # Tasks
@@ -21,8 +21,10 @@ visit https://www.jetbrains.com/student/ and create a new JetBrains account with
 You will receive a student license for all JetBrains products valid for one year.
 It's advisable to include the `module add` command into your `~/.bashrc`.
 
-2. Create a simple Quarkus project via `https://code.quarkus.io/`; this will generate a .zip file that you can later import 
-   into your chosen IDE). Choose the latest regular version. For Project Metadata, set suitable `groupId`, `artifactId`, `version`, and `build tool` as you prefer.
+2. Create a simple Quarkus project via `https://code.quarkus.io/`; this will
+generate a .zip file that you can later import into your chosen IDE. Choose the
+latest regular version. For Project Metadata, set suitable `groupId`,
+`artifactId`, `version`, and `build tool` as you prefer.
 
 3. Select the REST service preset. That should give you at least the `quarkus-rest` extension. You can also add other extensions if you want, but we can always add them later, so there is no need to add anything more now. You can download the ZIP file and unzip it into your preferred directory.
 
@@ -91,7 +93,7 @@ http://localhost:8080/persons
 ```
 
 This site should return a paginated list of persons from the backend system. You can check or modify these pages by
-suffixing the URL by, e.g., "?page=1&size=5"
+suffixing the URL by, e.g., "?page=1&size=5".
 
 Among other things, you can review the details of a specific person along with their contact information.
 ```shell
@@ -127,10 +129,10 @@ $ mvn quarkus:dev
 
 After adding this dependency, a few things will happen automatically:
 
-- if you are running Dev mode, Quarkus will automatically restart the application 
-- Quarkus will automatically configure OIDC (OpenID Connect) authentication for your application
+- If you are running Dev mode, Quarkus will automatically restart the application.
+- Quarkus will automatically configure OIDC (OpenID Connect) authentication for your application.
 - This also means that it will try to start your first Dev Service. Dev Services are usually Docker/Podman containers that Quarkus automatically starts for you to provide required services (like databases, message brokers, etc.) during 
-  development. In this case, it will try to start a Keycloak container for you. At least, we will see if you have Docker/Podman running on your machine (you should).
+  development. In this case, it will try to start a Keycloak (https://www.keycloak.org/) container for you. At least, we will see if you have Docker/Podman running on your machine (you should).
 - Keykloak Dev Service automatically injects some dynamic configuration into your application, so it is automatically connected and configured to use this Keycloak container for authentication.
 
 2. You can find the information (included the injected configuration) about the started Dev Services by pressing `c` in the Dev mode terminal. You can also find them in Dev UI under the "Dev Services" section. It should look something like this:
@@ -218,67 +220,61 @@ Complete the `answers.txt` file with the specific command detailing how to run t
 
 ## Task 6 - Create your own Java annotation
 
-Go through the slides in the presentation focusing on Aspect Oriented Programming (AOP).
+Similar to Aspect Oriented Programming (AOP) in Spring, CDI has the concept of interceptors. Each method in a CDI bean can be intercepted if associated with an annotation - https://quarkus.io/guides/cdi#interceptors.
 
-Create package named `annotations`, and within it, define your own annotation named `"MethodExecutionTimeTracker"` (**Note:** Custom
+Create package named `annotations`, and within it, define your own annotation named `MethodExecutionTimeTracker` (**Note:** Custom
 annotations in Java are created by defining an interface prefixed with `"@"`
 -> `@interface MethodExecutionTimeTracker`). Annotate your custom annotation with `@Target`, `@Retention`, `@Documented`
-, `@Inherited`. Set the target to `"METHOD"` and retention to `"RUNTIME"`.
+, `@Inherited`. Set the target to `"METHOD"` and `"TYPE"`, and retention to `"RUNTIME"`.
+
+Now also add the `@InterceptorBinding` annotation on top of your custom annotation to define it as an interceptor binding annotation. Otherwise, CDI will not recognize it for this purpose.
 
 Complete the `answers.txt` file with an explanation of the differences between the various RetentionPolicy options (`runtime`, `class`, `source`).
 
-## Task 7 - Create your custom AOP functions
+## Task 7 - Create your custom CDI interceptor
 
-Add the following dependency into your `pom.xml` file in the module `spring-boot-social-network`.
-
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-aop</artifactId>
-</dependency>
-```
-
-1. Create the package `aop` (within the `cz.muni.fi.pa165.socialnetwork` package).
-2. Within the `aop` package, create the class `LoggingAspect` and annotate it with `@Aspect`, and `@Component`
-   annotations.
-3. Add a method to this class with the following signature: `public Object trackMethodInvocationTime(ProceedingJoinPoint joinPoint)`
-4. Annotate this method with `@Around("@annotation(cz.muni.fi.pa165.socialnetwork.annotations.MethodExecutionTimeTracker)")`
-5. Implement the `trackMethodInvocationTime` method to log the time before the method is called and after the method is called into the console.
+1. Create the package `interceptor` (within the `cz.muni.fi.pa165.socialnetwork` package).
+2. Within the `interceptor` package, create the class `LoggingInterceptor` and annotate it with your annotation `@MethodExecutionTimeTracker`, and `@Interceptor`. Optionally, you can also annotate it with `@Priority` to define the order of 
+   multiple interceptors. Write in `answers.txt` what is the purpose of the `@Priority` annotation.
+3. Add a method to this class with the following signature: `Object logMethodExecutionTime(InvocationContext context) throws Exception`
+4. Annotate this method with `@AroundInvoke`
+5. Implement the `logMethodExecutionTime` method to log the time before the method is called and after the method is called into the console.
 6. Apply your annotation `@MethodExecutionTimeTracker` to the `findAll` method in the `PersonFacade` class, then run the project and observe the results.
-7. In the print statement inside the `trackMethodInvocationTime` method, also retrieve the called method signature from the
-   `ProceedingJoinPoint` object.
+7. In the print statement inside the `logMethodExecutionTime` method, also retrieve the called method signature from the `InvocationContext` object.
 
 **Note:** at that point you should see time execution of the findAll method whenever you will visit the following site (the application port might be different):
 
 ```shell
-http://localhost:8080/pa165/rest/api/v1/persons
+http://localhost:8080/persons
 ```
 
-## Task 8 - Create additional AOP functions
+## Task 8 - Create additional CDI Interceptor
 
-1. Create class `CommonPointcutsConfig` in `aop` package.
-2. Create method `void restLayerExecutionLogging(){}`
-3. Annotate this method with `@Pointcut("target(cz.muni.fi.pa165.socialnetwork.rest.exceptionhandling.CustomRestGlobalExceptionHandling)")`
-4. Create additional method in the class `LoggingAspect` with `@Before` annotation so you log every exception that is
-   handled by the `CustomRestGlobalExceptionHandling` class.
-
-**Note:** Keep in mind that you should create just one class with a set of pointcuts. Otherwise, you might experience
-duplicating of AOP functions or encounter issues with the overall AOP design.
+1. Create a new interceptor binding annotation `@TransactionCounter` in the `annotation` package. Target only `"TYPE"` this time.
+2. Create a new interceptor class `TransactionCounterInterceptor` in the `interceptor` package.
+3. Implement this interceptor to log and count (it is enough to do this before `context.proceed` once) transactions in any CDI bean annotated with `@TransactionCounter`.
+4. Add `@TransactionCounter` annotation to the `PersonFacade`.
+5. Call the `http://localhost:8080/persons` endpoint multiple times and observe the counting in the console.
+6. Add a `@Priority` so `TransactionCounterInterceptor` is executed after `LoggingInterceptor`, meaning that the transaction count output should be between start and end logs from `LoggingInterceptor`.
+7. Check with tutor if your implementation is correct.
 
 ## Task 9 - Implement Scheduling
 
-1. Create classes `MyDummyScheduler` and `SchedulerConfig` in `config` package.
-2. Annotate class `SchedulerConfig` with `@Configuration` and `@EnableScheduling` annotations.
-3. Annotate class `MyDummyScheduler` with `@Component` annotation.
-4. In `MyDummyScheduler` class implement a method that will print to the console each 15 seconds the String "Wohoo,
-   scheduling in Spring is easy.".
+Guide - https://quarkus.io/guides/scheduler-reference
+
+1. Add Quarkus Scheduler extension - https://quarkus.io/extensions/io.quarkus/quarkus-scheduler/. Note that you don't need to stop Dev mode for Quarkus to pick up the new dependency.
+2. Create class `MyDummyScheduler` in new `scheduler` package.
+3. In `MyDummyScheduler` class implement a method that will print to the console each 15 seconds the String "Wohoo, scheduling in Quarkus is easy.". Hint: use `@Scheduled` annotation with `every` attribute.
 
 **Note:** Scheduling might be employed, for example, to check every midnight whether users' privileges to specific resources are still valid.
-Another common use case for scheduling is cache revalidation. For more complex features, consider scheduling via `Quartz`.
+Another common use case for scheduling is cache revalidation. For more complex features, consider scheduling via `Quartz` (https://quarkus.io/guides/quartz).
 
 ## Task 10 (Optional) - Implement Caching
 
-1. Create class `CacheConfig` (annotate this class with `@EnableCaching` and `Configuration`) and configure arbitrary
-   caching library (e.g., [Caffeine Cache](https://github.com/ben-manes/caffeine)).
+https://quarkus.io/guides/cache
+
+1. Add `quarkus-cache` extension that brings caching capabilities to Quarkus applications (Caffeine library).
 2. Cache method `findById` in `PersonFacade` class.
+3. Try to call person detail with different keys (ids) and observe that the either the transaction is not started or just put any print statement in the method to see that the method is not executed again for the same id.
+4. Try to invalidate the cache after some time (e.g., 30 seconds) and verify that the after the invalidation the method is executed again.
 
