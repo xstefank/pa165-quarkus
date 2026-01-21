@@ -69,7 +69,7 @@ In `GreetingResource.java` class (the default that will be created) `hello` meth
 
 ```shell
 $ git clone https://github.com/xstefank/pa165-quarkus.git
-cd pa165-quarkus/seminar-03
+cd pa165-quarkus/seminar-03/quarkus-social-network
 ```
 
 2. Open the project in IntelliJ IDEA and check its structure and code.
