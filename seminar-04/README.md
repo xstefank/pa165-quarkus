@@ -2,6 +2,8 @@
 
 This seminar will guide you through a few test cases and things related to testing in Quarkus.
 
+As always, Quarkus provides an comprehensive guide for testing that you can use as a reference: https://quarkus.io/guides/getting-started-testing.
+
 # Tasks
 
 ## Task 1 - Clone and open the project for the Spring Boot basic tasks
@@ -15,7 +17,6 @@ $ git clone https://github.com/xstefank/pa165-quarkus.git
 cd pa165-quarkus/seminar-04/quarkus-testing
 ```
 
-
 2. Open the project in IntelliJ IDEA.
 
 3. Build the project in the project root directory
@@ -26,7 +27,7 @@ $ mvn clean install
 
 ## Task 2 - Intro to test annotations
 
-In this section, basic annotations used in tests will be explained. We will also apply them in the `PersonFacadeTest`
+In this section, we will explain basic testing annotations. We will also apply them in the `PersonFacadeTest`
 one by one in order to have also hands-on experience with them.
 
 ### [@Test](https://junit.org/junit5/docs/current/api/org.junit.jupiter.api/org/junit/jupiter/api/Test.html)
@@ -48,6 +49,8 @@ mvn test -Dtest=PersonFacadeTest
 
 What is happening? Fix the problem.
 
+2. Run the test again, but this time, with continuous testing in Dev mode - https://quarkus.io/guides/continuous-testing. You can probably see the benefits of this functionality right away.
+
 ### [@Mock](https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#9)
 This annotation marks a field as a mock.
 
@@ -63,16 +66,16 @@ void setUp() {
 Can we make this method more readable? Of course, we can! In fact, in the following parts of this task, we will try to
 fully get rid of this method.
 
-2. Mark `personService` and `personMapper` as mocks.
+3. Mark `personService` and `personMapper` as mocks.
 
-3. Do not forget to delete appropriate LoC from the `setUp` method.
+4. Do not forget to delete appropriate LoC from the `setUp` method.
 
-4. Run `PersonFacadeTest` again.
+5. Run `PersonFacadeTest` again. Feel free to experiment with continuous testing in Dev mode again.
 
 Hmm, **NPE** (Null Pointer Exception), but why?! Unlike [Mockito#mock](https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#mock(java.lang.Class)),
 `@Mock` just marks the field as a mock, it does **NOT** initialize it.
 
-5. Fix the NPE. Use [MockitoAnnotations#openMocks](https://www.javadoc.io/static/org.mockito/mockito-core/5.16.0/org.mockito/org/mockito/MockitoAnnotations.html#openMocks(java.lang.Object)).
+6. Fix the NPE. Use [MockitoAnnotations#openMocks](https://www.javadoc.io/static/org.mockito/mockito-core/5.16.0/org.mockito/org/mockito/MockitoAnnotations.html#openMocks(java.lang.Object)).
 
 ### [@ExtendWith](https://junit.org/junit5/docs/5.0.3/api/org/junit/jupiter/api/extension/ExtendWith.html)
 
@@ -80,7 +83,7 @@ Even though the solution from the previous point is correct, the best practice i
 which calls `MockitoAnnotations#openMocks` internally. Besides that, it also does another stuff for us, e.g. validates
 the correct usage of the Mockito framework.
 
-6. Use the suggested solution.
+7. Use the suggested solution.
 
    **Checkpoint:** Only the line
 ```java
@@ -91,9 +94,9 @@ should be present in the `setUp` method.
 ### [@InjectMocks](https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/InjectMocks.html)
 This annotation is used to inject required mocks into the class under test.
 
-7. Use the annotation. Do not forget to remove `PersonFacadeTest#setUp`.
+8. Use the annotation. Do not forget to remove `PersonFacadeTest#setUp`.
 
-8. Ensure that everything is working as expected by running `PersonFacadeTest` again.
+9. Ensure that everything is working as expected by running `PersonFacadeTest` again.
 
 ## Task 3 - Test case naming
 As you can see, existing unit tests in [PersonServiceTest](src/test/java/cz/muni/fi/pa165/socialnetwork/service/PersonServiceTest.java)
