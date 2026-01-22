@@ -99,6 +99,7 @@ This annotation is used to inject required mocks into the class under test.
 9. Ensure that everything is working as expected by running `PersonFacadeTest` again.
 
 ## Task 3 - Test case naming
+
 As you can see, existing unit tests in [PersonServiceTest](src/test/java/cz/muni/fi/pa165/socialnetwork/service/PersonServiceTest.java)
 have a different naming as tests you have seen in the previous seminars. The main reason for that is to show you
 that one test case per method is not always enough.
