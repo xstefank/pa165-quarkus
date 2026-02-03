@@ -165,7 +165,7 @@ Let's write quick tests for facade layer. Take an inspiration from existing test
 You do not see the mapper in the picture above because it is not an architectural layer, it is just dependency of the class under test.
 
 1. Implement `findByEmail` in facade layer;
-2. Write the test for it
+2. Write the test for it.
 3. Run it!
 4. Write test for happy path scenario for `updateEmail` method;
     1. What do you think? What name would be appropriate for such test?
@@ -173,7 +173,7 @@ You do not see the mapper in the picture above because it is not an architectura
 
 **Hint:** `Mockito.doNothing()` could be of use.
 
-## Task 6 - REST Controller tests
+## Task 6 - REST resource tests
 Now we will proceed with the same approach as for facade and service unit tests.
 
 <img alt="Controller test diagram" src="images/controller-test.svg" width="50%">
@@ -240,66 +240,65 @@ Check the implementation and look at what kind of two custom exceptions can this
 
 **Hint:** Use `assertThrows` from JUnit5, documentation [here](https://junit.org/junit5/docs/5.9.1/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html#assertThrows(java.lang.Class,org.junit.jupiter.api.function.Executable)).
 
-## Task 9 - Web context test slice
+## Task 9 - QuarkusTest and RestAssured
 Let's write another unit test for rest controller. Unlike in task 6, we won't invoke requests programatically, e.g. `personRestController.findByIdl(id)`, but directly using HTTP invocations, e.g. `GET /persons/{id}` (hence, also checking whether endpoint handlers really handle what we suppose to handle).
 
-1. Look at the `PersonRestControllerWebMvcTest`.
+1. Look at the `PersonResourceMocksTest`.
 
 You should spot the following new annotations:
-- [@WebMvcTest](https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/test/autoconfigure/web/servlet/WebMvcTest.html)
+- [@QuarkusTest](https://javadoc.io/static/io.quarkus/quarkus-junit5/0.13.2/io/quarkus/test/junit/QuarkusTest.html)
 
-Example of a [test slice](https://www.diffblue.com/blog/java/software%20development/testing/spring-boot-test-slices-overview-and-usage/)
-which instantiates only the web context of the whole application context. Applied to our case, this injects the
-following beans **defined by us**: _PersonRestController_, _App_, _CustomRestGlobalExceptionHandling_.
+This annotation boots up the whole Quarkus application. So, it is possible to call the endpoints via HTTP requests. It also starts Dev Services (if needed), e.g. starts up the in-memory (H2) or external (PostgreSQL) database.
 
-**Note:** Feel free to experiment with the `PersonRestControllerWebMvcTest#seekMyBeans`.
+QuarkusTest is also a CDI bean that is actually included in the started application. Therefore, it is possible to inject other beans into the test class. So as you can see, everything runs in a single JVM.
 
-- [@MockBean](https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/test/mock/mockito/MockBean.html)
 
-This annotation does **not** come from the Mockito framework, unlike `@Mock`, but it is Spring Boot-specific annotation.
-It registers the field to which it is applied into the Spring's application context. Since `PersonFacade` (to which is
-this annotation applied) is not part of the filtered web context, this annotation is really required, i.e., `@Mock` is
-not enough in this case.
+- [@InjectMock](https://quarkus.io/guides/getting-started-testing#further-simplification-with-injectmock)
+
+This annotation does **not** come from the Mockito framework, unlike `@Mock`, but it is Spring Quarkus-specific annotation. You need to add the following dependency to the `pom.xml` in order to use it:
+```xml
+<dependency>
+    <groupId>io.quarkus</groupId>
+    <artifactId>quarkus-junit-mockito</artifactId>
+    <scope>test</scope>
+</dependency>
+```
+
+It basically provides an automated mock for any CDI injection. Anywhere in the application, where the bean is injected, the mock will be injected instead. This is very useful for testing.
+
+You will also spot that the test uses [RestAssured](https://rest-assured.io/), which is a Java DSL for making HTTP requests and verifying responses. It is widely used for testing REST APIs in Java applications particularly using JSONs. Quarkus has 
+built-in support for 
+RestAssured, so you have for instance automatically configured method `given()` available that points to the started Quarkus application. RestAssured provides a very intuitive fluent API, but feel free to check its documentation in case you want to learn more about it.
 
 2. (**OPTIONAL**) Write the test for `findByEmail`. Simulate the situation when the person with the requested email is present.
 
 3. Write the test for `findByEmail`. Simulate the situation when the person with the requested email is **NOT** present.
 
-   **Hint:** Part of the context is also the bean `CustomRestGlobalExceptionHandling`. Find out what it does. Use this
-   knowledge in the solution.
+**Hint:** `.body("details", containsString("cz.muni.fi.pa165.socialnetwork.exceptions.ResourceNotFoundException"));`
 
-## Task 10 - Integration test
+## Task 10 - Integration tests
 
-So far, we have tested parts of the application separately. Now, it's time to test it as a whole!
+Very often it is useful to test the application as a black box. Meaning that the test runs separately from the application under the test. This is what Quarkus's `@QuarkusIntegrationTest` does. Quarkus integration test runs in a separate process 
+from the Quarkus application. This happens in three cases:
 
-1. Look at the `PersonRestControllerIT`.
+- When you build a JAR: Quarkus application runs as `java -jar` and the integration test runs in a separate JVM process.
+- When you build a native executable: Quarkus application runs as a native executable and the integration test runs in a separate JVM process.
+- When you build a Docker/Podman image: Quarkus application runs in a container and the integration test runs in a separate JVM process. (we will do this later in the course)
 
-You should spot the following two new annotations:
+1. Look at the `PersonResourceIT` and `PersonResourceTest`.
 
-- [@SpringBootTest](https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/test/context/SpringBootTest.html)
-  This annotation is used when we want to create an integration test, since it instantiates all the beans from the
-  application.
+As you can see, in Quarkus, as long as your unit test `@QuarkusTest` doesn't use any injections, mocked beans, or access the internals of the application in any way, you can easily add an integration test by just extending the unit test and 
+annotating it with `@QuarkusIntegrationTest`. This will run all the tests from `@QuarkusTest` but in a separate JVM process as described above. Of course, you can also add new tests to the integration test class.
 
-- [@AutoConfigureMockMvc](https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/test/autoconfigure/web/servlet/AutoConfigureMockMvc.html)
-  This annotation is used when we want to enable auto-configuration of the `MockMvc`.
-
-  **Note:** Why didn't we need it in the Task 8? Because the `@WebMvcTest` has the `@AutoConfigureMockMvc` already in
-  it.
-
-2. Create an integration test for `findByEmail` method. Simulate the case when the person with the requested email is
-   present.
-
-3. Create an integration test for `findByEmail` method. Simulate the case when the person with the requested email is
-   **NOT** present.
-
-   **Hint:** What DTO does the application return in case of any error?
+For our use case, we don't need to add any new tests, as we want to run all the tests from `PersonResourceTest` as integration tests.
 
 **Note:** One of the preferred ways to call the integration tests is to suffix them with 'IT', what's exactly the case
-for our IT of the Person controller, _PersonRestController**IT**_. Since it is named this way, surefire plugin
+
+For our IT of the Person controller, _PersonResource**IT**_. Since it is named this way, surefire plugin
 does not execute tests in such test class (which is completely fine, since surefire should be used to execute only unit
 tests). In order to execute tests in this test class, we use [failsafe plugin](https://maven.apache.org/surefire/maven-failsafe-plugin/),
 which is used for executing integration tests. Unlike surefire, failsafe automatically executes test classes suffixed
-with 'IT'.
+with 'IT'. Also note, that because of this same reason, IT tests don't run with continuous testing in Dev mode.
 
 # Task 11 - Run all the tests
 
@@ -308,6 +307,20 @@ Run all the tests, e.g. by running:
 mvn clean verify
 ```
 
+Note `<skip>false</skip>` in the failsafe plugin configuration in `pom.xml`. Quarkus by default skips integration tests.
+
 Double check all the tests were run and are passing. In case you are getting an error now, but didn't get any error when
 running the tests separately, chances are you were doing some unwanted side effects, e.g. test for updating the
 email really updated the email and didn't use the mock (which should do nothing in that case).
+
+2. Package application also as a native executable and run all the tests again.
+
+```shell
+mvn clean verify -Dnative -Dquarkus.native.container-build=true
+```
+
+`-Dquarkus.native.container-build=true` is needed in case you don't have GraalVM installed locally.
+
+You will see the that the tests are run again as integration tests against the native executable.
+
+3. (Optional) Try to write one last test that will run as an integration test. Meaning you will test the data generated in the application. (e.g., call `GET /persons/1` and check the returned data).
