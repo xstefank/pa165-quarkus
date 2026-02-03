@@ -28,8 +28,8 @@ public class PersonResource {
 
     @GET
     @Path("/{id}")
-    public PersonDetailedViewDto findById(@PathParam("id") Long id) {
-        return personFacade.findById(id);
+    public Response findById(@PathParam("id") Long id) {
+        return Response.ok(personFacade.findById(id)).build();
     }
 
     @PATCH

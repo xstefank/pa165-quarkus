@@ -5,6 +5,7 @@ import cz.muni.fi.pa165.socialnetwork.mappers.PersonMapper;
 import cz.muni.fi.pa165.socialnetwork.service.PersonService;
 import cz.muni.fi.pa165.socialnetwork.util.TestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
