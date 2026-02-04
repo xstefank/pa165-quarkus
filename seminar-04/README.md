@@ -170,8 +170,10 @@ You do not see the mapper in the picture above because it is not an architectura
     1. What do you think? What name would be appropriate for such test?
     2. Think about different scenarios (take a look at `updateEmail` implementation in service layer);
 
+Hint: `Mockito.doNothing()` could be of use.
+
 ## Task 6 - REST resource tests
-Now we will proceed with the same approach as for facade and service unit tests.
+Now we will proceed with the same approach as for facade and REST unit tests.
 
 <img alt="REST Resource test diagram" src="images/resource-test.svg" width="50%">
 
@@ -281,14 +283,14 @@ Our IT of the Person resource is called _PersonResource**IT**_. Since it is name
 does not execute tests in such test class (which is completely fine, since surefire should be used to execute only unit tests). In order to execute tests in this test class, we use [failsafe plugin](https://maven.apache.org/surefire/maven-failsafe-plugin/),
 which is used for executing integration tests. Unlike surefire, failsafe automatically executes test classes suffixed with 'IT'. Also note, that because of this same reason, IT tests don't run with continuous testing in Dev mode.
 
-# Task 11 - Run all the tests
+## Task 11 - Run all the tests
 
 Run all the tests, e.g. by running:
 ```shell
 mvn clean verify
 ```
 
-Note `<skip>false</skip>` in the failsafe plugin configuration in `pom.xml`. Quarkus by default skips integration tests.
+Note `<skipITs>false</skipITs>` in the failsafe plugin configuration in `pom.xml`. Quarkus by default skips integration tests.
 
 Double check all the tests were run and are passing. In case you are getting an error now, but didn't get any error when running the tests separately, chances are you were doing some unwanted side effects, e.g. test for updating the email really updated the email and didn't use the mock (which should do nothing in that case).
 

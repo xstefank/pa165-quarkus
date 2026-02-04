@@ -15,6 +15,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @QuarkusTest
 public class PersonResourceMocksTest {
 
+//    normal injections work too in @QuarkusTest
+//    @Inject
+//    PersonRepository personRepository;
+
     @InjectMock
     private PersonFacade personFacade;
 
