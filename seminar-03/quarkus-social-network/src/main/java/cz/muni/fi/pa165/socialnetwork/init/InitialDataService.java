@@ -35,17 +35,17 @@ public class InitialDataService {
 
     private void insertPersonWithContact() {
         Person person1 = new Person();
-        person1.setEmail("pavel.seda@sap.com");
-        person1.setFamilyName("Šeda");
-        person1.setGivenName("Pavel");
+        person1.setEmail("tony.stark@sap.com");
+        person1.setFamilyName("Stark");
+        person1.setGivenName("Tony");
 
         Contact contact1 = new Contact();
-        contact1.setContact("pavel.seda@sap.com");
+        contact1.setContact("tony.stark@avengers.com");
         contact1.setContactType(ContactType.EMAIL);
         contact1.setPerson(person1);
 
         Contact contact2 = new Contact();
-        contact2.setContact("seda@fi.muni.cz");
+        contact2.setContact("ironman@fi.muni.cz");
         contact2.setContactType(ContactType.EMAIL);
         contact2.setPerson(person1);
 
