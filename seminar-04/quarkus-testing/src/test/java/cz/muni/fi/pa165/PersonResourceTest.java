@@ -9,10 +9,6 @@ import static io.restassured.RestAssured.given;
 @QuarkusTest
 class PersonResourceTest {
 
-//    normal injections work too in @QuarkusTest
-//    @Inject
-//    PersonRepository personRepository;
-
     @Test
     void testPersonsEndpoint() {
         given()
