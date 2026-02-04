@@ -100,7 +100,7 @@ This annotation is used to inject required mocks into the class under test.
 
 ## Task 3 - Test case naming
 
-As you can see, existing unit tests in [PersonServiceTest](src/test/java/cz/muni/fi/pa165/socialnetwork/service/PersonServiceTest.java)
+As you can see, existing unit tests in [PersonServiceTest](quarkus-testing/src/test/java/cz/muni/fi/pa165/socialnetwork/service/PersonServiceTest.java)
 have a different naming as tests you have seen in the previous seminars. The main reason for that is to show you
 that one test case per method is not always enough.
 
@@ -132,11 +132,11 @@ You will learn how to create repository layer in the lectures about persistence.
 
 <img alt="Service test diagram" src="images/service-test.svg" alt="drawing" width="50%"/>
 
-1. Check out [service implementation](src/main/java/cz/muni/fi/pa165/socialnetwork/service/PersonService.java);
+1. Check out [service implementation](quarkus-testing/src/main/java/cz/muni/fi/pa165/socialnetwork/service/PersonService.java);
 2. Implement `findByEmail(String email)`;
     1. Use repository method `findByEmail` implemented in
-       [Person Repository](src/main/java/cz/muni/fi/pa165/socialnetwork/data/repository/PersonRepository.java);
-3. Write test for the new method in [PersonServiceTest](src/test/java/cz/muni/fi/pa165/socialnetwork/service/PersonServiceTest.java);
+       [Person Repository](quarkus-testing/src/main/java/cz/muni/fi/pa165/socialnetwork/data/repository/PersonRepository.java);
+3. Write test for the new method in [PersonServiceTest](quarkus-testing/src/test/java/cz/muni/fi/pa165/socialnetwork/service/PersonServiceTest.java);
     1. Name of the test could be `findByEmail_personFound_returnsPerson` which should give you a lead what to test;
     2. Run the test;
         1. Test it through IDE (look for a green button next to the test definition);
@@ -215,7 +215,7 @@ Please call the `initData()` method in the beginning of your test in order to ha
 3. Write the test for `findByEmail`. Simulate the situation when the person with the requested email is **NOT** present.
 
 ## Task 8 - Testing exceptions
-Get back to the start. Find the implementation of `updateEmail` in the [service implementation](src/main/java/cz/muni/fi/pa165/socialnetwork/service/PersonService.java).
+Get back to the start. Find the implementation of `updateEmail` in the [service implementation](quarkus-testing/src/main/java/cz/muni/fi/pa165/socialnetwork/service/PersonService.java).
 Check the implementation and look at what kind of two custom exceptions can this method throw.
 1. Write test `updateEmail_emailIsInvalid_throwsEmailValidationFailedException`
     1. Check that lower layer would not be called;
