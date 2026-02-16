@@ -121,25 +121,17 @@ And now we are ready to run `pa165-seminar-service` in Podman container.
 2. To run this image as container all we need to is run the following command:
 
 ```shell
-$ podman run -p 8080:8080 xstefank/pa165-seminar-service          
-
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::                (v3.0.3)
-
-2023-03-03T10:03:04.296Z  INFO 1 --- [           main] cz.muni.pa165.App                        : Starting App v0.0.1-SNAPSHOT using Java 17.0.6 with PID 1 (/app.jar started by root in /)
-2023-03-03T10:03:04.299Z  INFO 1 --- [           main] cz.muni.pa165.App                        : No active profile set, falling back to 1 default profile: "default"
-2023-03-03T10:03:05.894Z  INFO 1 --- [           main] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 8080
-2023-03-03T10:03:05.905Z  INFO 1 --- [           main] cz.muni.pa165.App                        : Started App in 2.079 seconds (process running for 2.528)
+$ podman run -p 8080:8080 xstefank/pa165-seminar-service
+INFO exec -a "java" java -XX:MaxRAMPercentage=80.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -XX:+ExitOnOutOfMemoryError -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -cp "." -jar /deployments/quarkus-run.jar 
+INFO running in /deployments
+__  ____  __  _____   ___  __ ____  ______ 
+ --/ __ \/ / / / _ | / _ \/ //_/ / / / __/ 
+ -/ /_/ / /_/ / __ |/ , _/ ,< / /_/ /\ \   
+--\___\_\____/_/ |_/_/|_/_/|_|\____/___/   
+2026-02-16 16:30:06,627 INFO  [io.quarkus] (main) pa165-seminar-service 1.0.0-SNAPSHOT on JVM (powered by Quarkus 3.31.3) started in 0.520s. Listening on: http://0.0.0.0:8080
+2026-02-16 16:30:06,628 INFO  [io.quarkus] (main) Profile prod activated. 
+2026-02-16 16:30:06,628 INFO  [io.quarkus] (main) Installed features: [cdi, rest, rest-client, rest-jackson, smallrye-context-propagation, vertx]
 ```
-
-_Possible problems:_
-- `Error: Unable to access jarfile /app.jar`
-  - Make sure that you have a built .jar file in directory `pa165-seminar-service/target/`
 
 _Note:_
 - you can run docker images with parameter `-d` (Detached)
@@ -148,14 +140,14 @@ _Note:_
 
 Note that `localhost/` prefix can be omitted for the local images. Meaning `xstefank/pa165-seminar-service` == `localhost/xstefank/pa165-seminar-service`.
 
-And now you have your Spring Boot application running in Podman container!
+And now you have your Quarkus application running in Podman container!
 
 To verify running containers you can use (in different terminal): 
 
 ```shell
 $ podman ps
 CONTAINER ID  IMAGE  COMMAND  CREATED  STATUS  PORTS  NAMES
-0c437a178ea8  localhost/xstefank/pa165-seminar-service:latest  About a minute ago  Up About a minute  0.0.0.0:8080->8080/tcp  affectionate_blackburn
+b922fdf8e0e8  localhost/xstefank/pa165-seminar-service:latest  About a minute ago  Up About a minute  0.0.0.0:8080->8080/tcp, 8443/tcp  nifty_chaum
 ```
 
 The `-p 8080:8080` parameter defines an HTTP tunnelling from your `localhost:8080` to the `:8080` port inside the container. This is required if we want to call the HTTP API in the container since each container runs by default in its own network which is not accessible from outside if not explicitly said so. This allows us to call the service as if it would be running on the localhost:8080 which is the same as if we would run it directly (without podman):
