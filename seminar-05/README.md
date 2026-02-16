@@ -11,38 +11,30 @@ how to run such image to get a running container, and also how to deploy such im
 
 ## Task 02 - Investigate and run `pa165-seminar-service`
 
-1. Investigate the code of the `pa165-seminar-service` application. 
+1. Investigate the code of the `pa165-seminar-service` application.
 
-In the `pom.xml`, you can see the `webflux` starter (`spring-boot-starter-webflux`)
-`spring-boot-starter-webflux` is a reactive version of the Spring Web. We use it because we need to make outgoing HTTP (REST) calls from our application and the `RestTemplate` provided by Spring Web is deprecated in favour of `WebClient` provided by Spring WebFlux. Feel free to experiment with reactive APIs but it's not required for this seminar.
-
-The class `WebController` provides the same capabilities as the application demonstrated at the lecture:
+The class `WebResource` provides the same capabilities as the application demonstrated at the lecture:
 - `GET /whereami` - returns a simple JSON containing information about the current location from where the request was created.
 - `GET /whoami` - return a simple unique String that represents id of this application.
 
 4. Build the application - `mvn clean package`
-5. Run the application with `java -jar target/pa165-seminar-service-0.0.1-SNAPSHOT.jar` and in different terminal try both endpoints:
+5. Run the application with `java -jar target/quarkus-app/quarkus-run.jar` and in different terminal try both endpoints:
    1. `curl localhost:8080/whereami`
    2. `curl localhost:8080/whoami`
 6. In yet another terminal try to run the same application again while you leave the first one running. You will get an error because of port conflict on port 8080:
 
 ```shell
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-Web server failed to start. Port 8080 was already in use.
+2026-02-16 16:15:07,914 ERROR [io.quarkus.runtime.Application] (main) Port 8080 seems to be in use by another process. Quarkus may already be running or the port is used by another application.
+2026-02-16 16:15:07,924 WARN  [io.quarkus.runtime.Application] (main) Use 'ss -anop | grep 8080' or 'netstat -anop | grep 8080' to identify the process occupying the port.
+2026-02-16 16:15:07,924 WARN  [io.quarkus.runtime.Application] (main) You can try to kill it with 'kill -9 <pid>'.
 ```
 
 Which is of course correct because we can't have two applications running on the same port.
 
 7. Run the second instance of the `pa165-seminar-service` on port 8081. Change the port only for the current execution of the application with:
-   1. Command line argument (`--server.port`)
-   2. System property (`-Dserver.port`)
-   3. Note that you need to write these argument to different places - https://www.baeldung.com/spring-boot-change-port#command-line
-   4. Compare the generated ids which should be different from the instance running on port 8080.
+   1. System property (`-Dquarkus.http.port`)
+   2. Environment property (`QUARKUS_HTTP_PORT`)
+   3. Compare the generated ids which should be different from the instance running on port 8080.
 8. Run the `verify-task02` script (**UNIX**: `./verify-task02.sh` || **WINDOWS**: `.\verify-task02.ps1`) with both services running to verify this task.
 9. Stop both instances of `pa165-seminar-service` (Ctrl+C).
 
