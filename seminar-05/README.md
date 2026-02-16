@@ -46,40 +46,46 @@ In this seminar, we use Podman (https://podman.io/) as our container runtime. If
 
 ```shell
 $ podman version
-Client:       Podman Engine
-Version:      4.9.3
-API Version:  4.9.3
-Go Version:   go1.21.7
-Built:        Mon Feb 19 16:41:34 2024
-OS/Arch:      linux/amd64
+Client:        Podman Engine
+Version:       5.7.1
+API Version:   5.7.1
+Go Version:    go1.25.4 X:nodwarf5
+Git Commit:    f845d14e941889ba4c071f35233d09b29d363c75
+Built:         Wed Dec 10 01:00:00 2025
+Build Origin:  Fedora Project
+OS/Arch:       linux/amd64
 ```
 
 You can use the latest available version.
 
-3. Create the `pa165-seminar-service/Dockerfile` file with the following content:
+3. Quarkus generates four Dockerfiles out of the box:
 
-```dockerfile
-FROM eclipse-temurin:17-jdk-alpine
-COPY target/*.jar /app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app.jar"]
-```
+- `Dockerfile.jvm` - runs the application as `java -jar`
+- `Dockerfile.legacy-jar` - older JAR format that also runs the application as `java -jar`
+- `Dockerfile.native` - runs the application as GraalVM native binary
+- `Dockerfile.native-micro` - also runs application as GraalVM native binary but also bases on very small image (for the applications where the image size matters)
 
-This is the simplest possible Dockerfile for Spring Boot application. Individual lines correspond to the Docker (Podman, we can use this here interchangeably) layers that will be created in the image built with this Dockerfile:
+For now, we can stick only to `Dockerfile.jvm` that contains everything we need. Check it's content. You can find the instruction how to package your application and how to use this Dockerfile to build an image in the comments. The actual content 
+of the Dockerfile starts from line `FROM ...`:
 
-- `FROM eclipse-temurin:17-jdk-alpine` - Each Dockerfile starts with FROM clause that defines the base image on top of which this image is created. We use `eclipse-temurin:17-jdk-alpine` which is a smaller version of the OpenJDK 17 image provided by Eclipse Temurin (https://adoptium.net/temurin/) distribution.
-- `COPY target/*.jar /app.jar` - this copies our created `pa165-seminar-service-0.0.1-SNAPSHOT.jar` to the image.
+
+- `FROM registry.access.redhat.com/ubi9/openjdk-21-runtime:1.24` - Each Dockerfile starts with FROM clause that defines the base image on top of which this image is created. We use `registry.access.redhat.com/ubi9/openjdk-21-runtime:1.24` which is a
+version of the OpenJDK 21 image provided by Red Hat (as you can see from the registry it is being pulled from, i.e., the first part of the name until the first `/`).
+- `COPY --chown=185 target/quarkus-app/*.jar /deployments/` (and other COPY statements) - this copies our created files to the image.
 - `EXPOSE 8080` is just marking information that our application runs on port 8080 (used later in OpenShift).
-- `ENTRYPOINT ["java", "-jar", "/app.jar"]` - The command that should be run when this image is run as container. Each Dockerfile should have and ENTRYPOINT or CMD clause that specifies the command. Search the internet what is the difference between these two and when you would use which.
-
-NOTE: It was reported that on some MacOS laptops there were errors related to amd64/arm64 architecture when using `eclipse-temurin:17-jdk-alpine` - if you have this issue, you can try replacing it with `eclipse-temurin:latest`.
+- `USER 185` - changes the user id of the user we use inside the container.
+- `ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"` (and other ENV statements) - define environment properties we want to define in the container that runs from this image.
+- `ENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]` - The command that should be run when this image is run as container. Each Dockerfile should have and ENTRYPOINT or CMD clause that specifies the command. Search the internet what is 
+  the difference between these two and when you would use which. This `run-java.sh` scripts comes from the base openjdk-21-runtime image.
 
 4. Build the Podman image with the following commands:
 
 ```shell
-$ podman pull registry.hub.docker.com/library/eclipse-temurin:17-jdk-alpine
-$ podman build -t xstefank/pa165-seminar-service .
+$ podman pull registry.access.redhat.com/ubi9/openjdk-21-runtime:1.24 # this step is optional, base image is pulled automatically during the build
+$ podman build -f src/main/docker/Dockerfile.jvm -t xstefank/pa165-seminar-service .
 ```
+
+The `-f` parameter specifies the path to the Dockerfile. If not specified, Podman/Docker looks for the file named `Dockerfile` or `Containerfile` in the current directory.
 
 The `-t` parameter represents the tag (name) under which the image is identified. Instead of `xstefank` use your faculty id.
 
@@ -96,13 +102,13 @@ And you can verify that the image was created by:
 
 ```shell
 $ podman images | grep pa165
-localhost/xstefank/pa165-seminar-service  latest  47bb7c178c12  2 minutes ago  381 MB
+localhost/xstefank/pa165-seminar-service  latest  5df83b0cf6fc  About a minute ago  419 MB
 ```
 
 Windows:
 ```powershell
 podman images | Select-String -Pattern "pa165"
-localhost/xstefank/pa165-seminar-service  latest  47bb7c178c12  2 minutes ago  381 MB
+localhost/xstefank/pa165-seminar-service  latest  5df83b0cf6fc  About a minute ago  419 MB
 ```
 
 5. Run the verify-task03 script (**UNIX**: `./verify-task03.sh` || **WINDOWS**: `.\verify-task03.ps1`) to verify this task (run the script from root folder of the repository).
