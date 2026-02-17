@@ -147,7 +147,7 @@ To verify running containers you can use (in different terminal):
 ```shell
 $ podman ps
 CONTAINER ID  IMAGE  COMMAND  CREATED  STATUS  PORTS  NAMES
-b922fdf8e0e8  localhost/xstefank/pa165-seminar-service:latest  About a minute ago  Up About a minute  0.0.0.0:8080->8080/tcp, 8443/tcp  nifty_chaum
+b922fdf8e0e8  localhost/xstefank/pa165-seminar-service:latest  About a minute ago  Up About a minute  0.0.0.0:8080->80809/tcp, 8443/tcp  nifty_chaum
 ```
 
 The `-p 8080:8080` parameter defines an HTTP tunnelling from your `localhost:8080` to the `:8080` port inside the container. This is required if we want to call the HTTP API in the container since each container runs by default in its own network which is not accessible from outside if not explicitly said so. This allows us to call the service as if it would be running on the localhost:8080 which is the same as if we would run it directly (without podman):
@@ -179,13 +179,8 @@ Orherwise, please check https://github.com/containers/podman-compose#installatio
 
 ```shell
 $ podman-compose version
-podman-compose version: 1.0.6
-['podman', '--version', '']
-using podman version: 4.9.3
-podman-compose version 1.0.6
-podman --version 
-podman version 4.9.3
-exit code: 0
+podman-compose version 1.5.0
+podman version 5.7.1
 ```
 
 NOTE: It was reported that on B130 computers the `~/.local/bin` is not on your `PATH` variable. To fix this, either add it to `PATH` with `export PATH=$PATH:~/.local/bin` or use the full path to the podman-compose in commands like this `~/.local/bin/podman-compose up`.
@@ -220,13 +215,14 @@ In the log you will see that the two containers are started. You can verify that
 
 ```shell
 $ podman ps
-CONTAINER ID  IMAGE                                            COMMAND     CREATED         STATUS         PORTS                   NAMES
-69baffdf6d3b  localhost/xstefank/pa165-seminar-service:latest              52 seconds ago  Up 38 seconds  0.0.0.0:8080->8080/tcp  pa165-seminar-service_web_1
-3800765e9dda  localhost/xstefank/pa165-seminar-service:latest              51 seconds ago  Up 37 seconds  0.0.0.0:8081->8080/tcp  pa165-seminar-service_web2_1
+CONTAINER ID  IMAGE  COMMAND  CREATED  STATUS  PORTS  NAMES
+d8f1b9e6fe76  localhost/xstefank/pa165-seminar-service:latest              17 seconds ago  Up 17 seconds  0.0.0.0:8080->8080/tcp, 8443/tcp  seminar-05_web_1
+432db5f38674  localhost/xstefank/pa165-seminar-service:latest              17 seconds ago  Up 17 seconds  0.0.0.0:8081->8080/tcp, 8443/tcp  seminar-05_web2_1
 ```
+
 _Possible problems:_
 - `Bind for 0.0.0.0:8081 failed: port is already allocated`
-  - Make sure that you have stopped previously run images 
+  - Make sure that you have stopped previously run images so you have both 8080 and 8081 ports free.
 
 
 And you can also run again `verify-task04` script since we have exactly same setup now as in task 04, just automated.
@@ -243,29 +239,26 @@ To start containers in detached mode, start the podman-compse like this:
 podman-compose up -d
 ```
 
-You see that after the containers start, the command exits, and you again can work in the same terminal. Try again `podman ps` to verify that the containers are indeed running. Also optionally run the `verify-task04` script if you'd like.
+You see that after the containers start, the command exits, and you again can work in the same terminal. Try again `podman ps` to verify that the containers are indeed running. Also, optionally run the `verify-task04` script if you'd like.
 
 ```shell
 $ podman ps
-CONTAINER ID  IMAGE                                            COMMAND     CREATED        STATUS             PORTS                   NAMES
-69baffdf6d3b  localhost/xstefank/pa165-seminar-service:latest              6 minutes ago  Up About a minute  0.0.0.0:8080->8080/tcp  pa165-seminar-service_web_1
-3800765e9dda  localhost/xstefank/pa165-seminar-service:latest              6 minutes ago  Up About a minute  0.0.0.0:8081->8080/tcp  pa165-seminar-service_web2_1
+CONTAINER ID  IMAGE  COMMAND  CREATED  STATUS  PORTS  NAMES
+d8f1b9e6fe76  localhost/xstefank/pa165-seminar-service:latest              2 minutes ago  Up 21 seconds  0.0.0.0:8080->8080/tcp, 8443/tcp  seminar-05_web_1
+432db5f38674  localhost/xstefank/pa165-seminar-service:latest              2 minutes ago  Up 21 seconds  0.0.0.0:8081->8080/tcp, 8443/tcp  seminar-05_web2_1
 ```
 
-To view the logs of any of the containers we need to use either the container name (last column) or the container hash id (first column). The `-f` flag means follow, meaning that if there will be any more logs printed they will be forwarded to this output.
+To view the logs of the containers we need to use either the container name (last column) or the container hash id (first column). The `-f` flag means follow, meaning that if there will be any more logs printed they will be forwarded to this output.
 
 ```shell
-$ podman logs -f pa165-seminar-service_web_1 
-
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::                (v3.0.3)
-
-2023-03-03T15:16:47.512Z  INFO 1 --- [           main] cz.muni.pa165.App                        : Starting App v0.0.1-SNAPSHOT using Java 17.0.6 with PID 1 (/app.jar started by root in /)
+$ $ podman logs -f seminar-05_web_1
+INFO exec -a "java" java -XX:MaxRAMPercentage=80.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -XX:+ExitOnOutOfMemoryError -Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager -cp "." -jar /deployments/quarkus-run.jar 
+INFO running in /deployments
+__  ____  __  _____   ___  __ ____  ______ 
+ --/ __ \/ / / / _ | / _ \/ //_/ / / / __/ 
+ -/ /_/ / /_/ / __ |/ , _/ ,< / /_/ /\ \   
+--\___\_\____/_/ |_/_/|_/_/|_|\____/___/   
+2026-02-17 08:56:43,274 INFO  [io.quarkus] (main) pa165-seminar-service 1.0.0-SNAPSHOT on JVM (powered by Quarkus 3.31.3) started in 0.774s. Listening on: http://0.0.0.0:8080
 ```
 
 To stop all containers running in the background which are defined in the configuration (again in the same directory as `docker-compose.yaml`):
@@ -276,7 +269,8 @@ podman-compose down
 
 Note that the detached containers are not tight in any way to the current terminal (shell). The yaml config is parsed again when the `down` operation is invoked. So you can manage the containers in an easy automated way with this.
 
-6. Add another image declaration to the `docker-compose.yaml` configuration. Use the image `quay.io/xstefank/pa165-test-image` on port 8082 (mapped to 8080 in container). **This time, use really this exact image** from tutors `xstefank` account. Start the podman-compose and verify that you have three services running. 
+6. Add another image declaration to the `docker-compose.yaml` configuration. Use the image `quay.io/xstefank/pa165-test-image-quarkus` on port 8082 (mapped to 8080 in container). **This time, use really this exact image** from tutors `xstefank` 
+   account. Start the podman-compose and verify that you have three services running. 
 
 7. Verify that the task is implemented correctly with `./verify-task05` script (**UNIX**: `./verify-task05.sh` || **WINDOWS**: `.\verify-task05.ps1`).
 
