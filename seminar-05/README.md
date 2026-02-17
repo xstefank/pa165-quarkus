@@ -295,7 +295,7 @@ This pulls the `podman/hello` image from quay.io.
 2. Verify that you have it now in your local registry with:
 
 ```shell
-$ podman image ls | grep podman/hello
+$ `podman image ls | grep podman/hello`
 quay.io/podman/hello  latest  804953f8be6e  45 hours ago   82.3 kB
 ```
 
@@ -311,7 +311,7 @@ quay.io/podman/hello  latest  804953f8be6e  45 hours ago   82.3 kB
 $ podman run quay.io/podman/hello
 ```
 
-And now you have run an image that was build on someone else's computer.
+And now you have run an image that was built on someone else's computer.
 
 4. The image will also be pulled when you try to run a container based on the image that you don't have in your local registry. 
 In that case, the image will be pulled from remote registry like quay.io or Docker Hub. 
@@ -319,10 +319,10 @@ If the image is available in multiple registries, podman will let you choose whi
 Run the following command, and choose docker.io version of the postgres image:
 
 ```shell
-podman run -p 8080:8080 springio/petclinic
+podman run -p 8080:8080 xstefank/quarkus-petclinic
 ```
 
-This time we pulled an image from Docker Hub (different registry) and you have a Spring PetClinic running on port 8080. Open http://localhost:8080 in your browser to verify that it is running.
+This time we pulled an image from Docker Hub (different registry) and you have a Quarkus PetClinic running on port 8080. Open http://localhost:8080 in your browser to verify that it is running.
 
 Now it's time to start pushing our own images to remote registries.
 
@@ -334,13 +334,13 @@ Now it's time to start pushing our own images to remote registries.
 
 ```shell
 $ podman image ls | grep pa165-seminar-service
-localhost/xstefank/pa165-seminar-service  latest  6da241f98547  26 hours ago   381 MB
+localhost/xstefank/pa165-seminar-service  latest  5df83b0cf6fc  20 hours ago  419 MB
 ```
 
 Windows:
 ```powershell
 podman image ls | Select-String -Pattern "pa165-seminar-service"
-localhost/xstefank/pa165-seminar-service  latest  6da241f98547  26 hours ago   381 MB
+localhost/xstefank/pa165-seminar-service  latest  5df83b0cf6fc  20 hours ago  419 MB
 ```
 
 `xstefank` is also tutor's username on quay.io. Replace all references from now on to your quay.io username.
@@ -363,15 +363,15 @@ podman tag xstefank/pa165-seminar-service quay.io/xstefank/pa165-seminar-service
 
 ```shell
 $ podman image ls | grep pa165-seminar-service
-quay.io/xstefank/pa165-seminar-service  latest  6da241f98547  26 hours ago   381 MB
-localhost/xstefank/pa165-seminar-service  latest  6da241f98547  26 hours ago   381 MB
+quay.io/xstefank/pa165-seminar-service  latest  5df83b0cf6fc  20 hours ago  419 MB
+localhost/xstefank/pa165-seminar-service  latest  5df83b0cf6fc  20 hours ago  419 MB
 ```
 
 Windows:
 ```powershell
 podman image ls | Select-String -Pattern "pa165-seminar-service"
-quay.io/xstefank/pa165-seminar-service  latest  6da241f98547  26 hours ago   381 MB
-localhost/xstefank/pa165-seminar-service  latest  6da241f98547  26 hours ago   381 MB
+quay.io/xstefank/pa165-seminar-service  latest  5df83b0cf6fc  20 hours ago  419 MB
+localhost/xstefank/pa165-seminar-service  latest  5df83b0cf6fc  20 hours ago  419 MB
 ```
 
 You see that hashes are the same. So it's the same image with different tags.
