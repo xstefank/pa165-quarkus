@@ -402,16 +402,20 @@ This is required for OpenShift later.
 
 OpenShift (https://docs.openshift.com/) is a Red Hat maintained fork of Kubernetes (https://kubernetes.io/). For the basics that we need in this seminar, you can imagine it as an automation of containers management. You will say you want 5 instances of `pa165-seminar-service` running at all times and OpenShift will make sure to start 5 instances, and if any of it fails or stops, it will start a new one to always have 5 instances running.
 
-For this seminar, we will use a free OpenShift cluster that you can get access to be having a Red Hat account (same as you would create for quay.io) called Developer Sandbox for Red Hat OpenShift (https://developers.redhat.com/developer-sandbox). It's a shared OpenShift instance in which you will have your own namespace (project) which is accessible only to you. This is limited to 14 GB RAM and 40 GB storage, and it will be available for 30 days. Additionally, all your pods (basically a container instance in OpenShift/Kubernetes) are scaled down to 0 after 12 hours. However, for the purposes of this seminar, but also the whole course and your projects it is more than sufficient. 
+For this seminar, we will use a free OpenShift cluster that you can get access to be having a Red Hat account (same as you would create for quay.io) called Developer Sandbox for Red Hat OpenShift (https://developers.redhat.com/developer-sandbox). 
+It's a shared OpenShift instance in which you will have your own namespace (project) which is accessible only to you. This is limited to 7 GB RAM and 15 GB storage, and it will be available for 30 days. Additionally, all your pods (basically a 
+container instance in OpenShift/Kubernetes) are scaled down to 0 after 12 hours. However, for the purposes of this seminar, but also the whole course and your projects it is more than sufficient. 
 
 1. Create your OpenShift Sandbox at https://developers.redhat.com/developer-sandbox.
    - At https://developers.redhat.com/developer-sandbox click the `Start your sandbox for free` button.
    - If you already have a Red Hat account, you can use it. Otherwise, create a new account.
    - You might be asked to provide your number to verify your account with SMS. Author wasn't charged for this SMS.
-   - If you are logged in, click `Start using your sandbox`.
-   - In the Red Hat Hybrid Cloud Console click `Launch` button in the "Red Hat OpenShift box".
-   - At Log in with... page click `DevSandbox` user which is the only option.
-   - And you should be redirected to your openshift dashboard at the topology view at URL that looks similar to this `https://console-openshift-console.apps.sandbox-m3.1530.p1.openshiftapps.com/topology/ns/<your-username>-dev?view=graph` and looks like this:
+   - If you are logged in, click `Openshift -> Try it`.
+   - And you should be redirected to your openshift dashboard at the topology view at URL that looks similar to this `https://console-openshift-console.apps.rm2.thpm.p1.openshiftapps.com/k8s/cluster/projects/<your-username>` and looks like this:
+
+![](images/landing.png)
+
+Now click on `Workloads -> Topology` this is the best overview page:
 
 ![](images/sandboxtopology.png)
 
@@ -468,17 +472,23 @@ And copy the login command under `Log in with this token` which looks like this:
 And paste this into your terminal to log your client into your OpenShift.
 
 ```shell
-$ oc login --token=sha256~hidden-token --server=https://api.sandbox-m3.1530.p1.openshiftapps.com:6443
-Logged into "https://api.sandbox-m3.1530.p1.openshiftapps.com:6443" as "mstefank" using the token provided.
+$ oc login --token=<token> --server=<server>
 
-You have one project on this server: "mstefank-dev"
+Logged into "<server>" as "mstefank" using the token provided.
+
+You have access to the following projects and can switch between them with 'oc project <projectname>':
+
+  * mstefank-dev
+    openshift-virtualization-os-images
+    sandbox-shared-models
 
 Using project "mstefank-dev".
 ```
 
 Note that my Red Hat id is `mstefank` but in Quay.io I have `xstefank`.  
 
-If you get something like `oc: command not found...` then you don't have correctly set `PATH` to the location where your `oc` tool is (e.g, `export PATH=$PATH /home/mstefank/Downloads` assumind the oc is in `/home/mstefank/Downloads/oc`) or just write the command with full path as `/home/mstefank/Downloads/oc login --token...`.
+If you get something like `oc: command not found...` then you don't have correctly set `PATH` to the location where your `oc` tool is (e.g, `export PATH=$PATH:/home/mstefank/Downloads` assuming the oc is in `/home/mstefank/Downloads/oc`) or just 
+write the command with full path as `/home/mstefank/Downloads/oc login --token...`.
 
 4. In the terminal where you logged into OpenShift, deploy the public version of your image to your OpenShift with:
 
@@ -490,7 +500,13 @@ This prints something like this:
 
 ```shell
 $ oc new-app quay.io/xstefank/pa165-seminar-service
---> Found container image e14a0dc (22 minutes old) from quay.io for "quay.io/xstefank/pa165-seminar-service"
+--> Found container image 5df83b0 (45 hours old) from quay.io for "quay.io/xstefank/pa165-seminar-service"
+
+    Java Applications 
+    ----------------- 
+    Platform for running plain Java applications (fat-jar and flat classpath)
+
+    Tags: java
 
     * An image stream tag will be created as "pa165-seminar-service:latest" that will track this image
 
@@ -515,7 +531,7 @@ Or in the terminal:
 ```shell
 $ oc get deployments
 NAME                    READY   UP-TO-DATE   AVAILABLE   AGE
-pa165-seminar-service   1/1     1            1           7m51s
+pa165-seminar-service   1/1     1            1           8m21s
 ```
 
 - A pod `pa165-seminar-service-<sth>` that is the actual container that was run from our image. You can also see it in the `Topology` view if you click the deployment mentioned above:
@@ -527,19 +543,20 @@ Also viewable in the terminal with `oc get pods`:
 ```shell
 $ oc get pods
 NAME                                     READY   STATUS    RESTARTS   AGE
-pa165-seminar-service-5d5c6d4967-vncqr   1/1     Running   0          12m
+pa165-seminar-service-7c4cb55754-mb9w9   1/1     Running   0          43m
 ```
 
-If you click the `View logs` button this will take to the logs from the running container of your application. In terminal, you can get that with `oc logs -f pa165-seminar-service-5d5c6d4967-vncqr`.
+If you click the `View logs` button this will take to the logs from the running container of your application. In terminal, you can get that with `oc logs -f pa165-seminar-service-7c4cb55754-mb9w9`.
 
 - A Service object called `pa165-seminar-service` which you can also see in the detail of the deployment above. This exposes the `pa165-seminar-service` deployment inside this cluster on port `8080` that is automatically parsed from our image (`EXPOSE 8080`). So if we would have different application deployed in this OpenShift cluster they would be already available to call this service from inside OpenShift.
 
 Also in terminal you can get it with `oc get svc`:
 
 ```shell
-$ oc get svc
-NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-pa165-seminar-service   ClusterIP   172.30.229.10   <none>        8080/TCP   14m
+$ oc get svc 
+NAME                    TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                               AGE
+modelmesh-serving       ClusterIP   None             <none>        8033/TCP,8008/TCP,8443/TCP,2112/TCP   92m
+pa165-seminar-service   ClusterIP   172.30.144.150   <none>        8080/TCP,8443/TCP                     48m
 ```
 
 5. Expose the Route object for the deployed application. In order for us to be able to call our application from outside OpenShift, we need to expose a route for it. This is very easily done with `oc expose service/pa165-seminar-service`. This is also already hinted when you deploy the application and the Service object is created:
@@ -563,8 +580,8 @@ And `oc get routes` to view your public URL:
 
 ```shell
 $ oc get routes
-NAME                    HOST/PORT                                                                      PATH   SERVICES                PORT       TERMINATION   WILDCARD
-pa165-seminar-service   pa165-seminar-service-mstefank-dev.apps.sandbox-m3.1530.p1.openshiftapps.com          pa165-seminar-service   8080-tcp                 None
+NAME                    HOST/PORT                                                               PATH   SERVICES                PORT       TERMINATION   WILDCARD
+pa165-seminar-service   pa165-seminar-service-mstefank-dev.apps.rm2.thpm.p1.openshiftapps.com          pa165-seminar-service   8080-tcp                 None
 ```
 
 Also notice a new small icon in the top right corner of the deployment icon in the `Topology` view together with the `Routes` section in the detail:
@@ -580,7 +597,7 @@ Of course, we don't have anything running on the root path `/` only on `/wheream
 In the terminal you can get the same response by using the route instead of `localhost`:
 
 ```shell
-$ curl http://pa165-seminar-service-mstefank-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/whereami
+$ curl http://pa165-seminar-service-mstefank-dev.apps.rm2.thpm.p1.openshiftapps.com/whereami
 ```
 
 And as you can see we indeed run the application that you built on your computer now somewhere in US. 
@@ -590,44 +607,45 @@ And as you can see we indeed run the application that you built on your computer
 ![](images/scalinginos.png)
 
 ```shell
-$ oc get pods
+$ oc get pods  
 NAME                                     READY   STATUS    RESTARTS   AGE
-pa165-seminar-service-5d5c6d4967-6rbvj   1/1     Running   0          100s
-pa165-seminar-service-5d5c6d4967-dlpdb   1/1     Running   0          100s
-pa165-seminar-service-5d5c6d4967-vncqr   1/1     Running   0          30m
+pa165-seminar-service-7c4cb55754-lgp55   1/1     Running   0          2m43s
+pa165-seminar-service-7c4cb55754-mb9w9   1/1     Running   0          74m
+pa165-seminar-service-7c4cb55754-rczrf   1/1     Running   0          2m43s
 ```
 
 7. Try to call your public URL now a few times again but this time on the `/whoami` endpoint. You will see that you automatically get a load balancer set up with the service that will redirect your calls to different pods:
 
 ```shell
-$ curl http://pa165-seminar-service-mstefank-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/whoami
-Id: Web Server Node 689466e4-3966-4cbe-a6c9-e26dfefecc43% 
-$ curl http://pa165-seminar-service-mstefank-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/whoami
-Id: Web Server Node 689466e4-3966-4cbe-a6c9-e26dfefecc43% 
-$ curl http://pa165-seminar-service-mstefank-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/whoami
-Id: Web Server Node 4d367009-aa36-44ae-99f9-aa87e752e4c8%                           
-$ curl http://pa165-seminar-service-mstefank-dev.apps.sandbox-m3.1530.p1.openshiftapps.com/whoami
-Id: Web Server Node a9a9911f-77d6-4e78-9e09-b864e2d7636c%
+$ curl http://pa165-seminar-service-mstefank-dev.apps.rm2.thpm.p1.openshiftapps.com/whoami
+Id: Web Server Node 101c1797-832e-4de2-ac97-54191b8d266c%
+$ curl http://pa165-seminar-service-mstefank-dev.apps.rm2.thpm.p1.openshiftapps.com/whoami
+Id: Web Server Node 91a5c64f-5eab-4451-834f-ee5a5ee646f9%
+$ curl http://pa165-seminar-service-mstefank-dev.apps.rm2.thpm.p1.openshiftapps.com/whoami
+Id: Web Server Node b2c16d05-7c98-444f-8e61-8dec6cdf7555%  
 ```
 
 It might happen that two consecutive calls will go to the same pod, so try a few more times in that case.
 
 8. Verify your task with the script `verify-task07.sh <your-public-URL>`. You must run it with the public URL of your route where your application is accessible like this:
 
-`$ ./verify-task07.sh http://pa165-seminar-service-mstefank-dev.apps.sandbox-m3.1530.p1.openshiftapps.com`
+`$ ./verify-task07.sh http://pa165-seminar-service-mstefank-dev.apps.rm2.thpm.p1.openshiftapps.com`
 
 9. Optional: If you need to delete all the resources that you deployed to your OpenShift (total clean up) you can run `oc delete all --all`:
 
 ```shell
 $ oc delete all --all
-pod "pa165-seminar-service-5d5c6d4967-6rbvj" deleted
-pod "pa165-seminar-service-5d5c6d4967-dlpdb" deleted
-pod "pa165-seminar-service-5d5c6d4967-vncqr" deleted
+pod "pa165-seminar-service-7c4cb55754-lgp55" deleted
+pod "pa165-seminar-service-7c4cb55754-mb9w9" deleted
+pod "pa165-seminar-service-7c4cb55754-rczrf" deleted
+service "modelmesh-serving" deleted
 service "pa165-seminar-service" deleted
 deployment.apps "pa165-seminar-service" deleted
 Warning: apps.openshift.io/v1 DeploymentConfig is deprecated in v4.14+, unavailable in v4.10000+
 imagestream.image.openshift.io "pa165-seminar-service" deleted
 route.route.openshift.io "pa165-seminar-service" deleted
+Warning: kubevirt.io/v1 VirtualMachineInstancePresets is now deprecated and will be removed in v2.
+Error from server (Forbidden): applications.app.k8s.io is forbidden: User "mstefank" cannot list resource "applications" in API group "app.k8s.io" in the namespace "mstefank-dev"
 ```
 
 ## Optional: Task 08 - Avenger services
