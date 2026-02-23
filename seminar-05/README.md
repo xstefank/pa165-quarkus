@@ -661,7 +661,7 @@ Throughout this task, **DON'T change the Java code of these projects**.
 
 1. Build both service with `mvn clean package`. 
 
-2. Run both services with uber JARs you built. Investigate the code to know which endpoints are available.
+2. Run both services with JARs you built. Investigate the code to know which endpoints are available.
 
 You aim for outputs like these:
 
@@ -677,7 +677,7 @@ Verify the task with `./verify-task08-02.sh`.
 
 3. As you can see, it seems we are calling wrong URL from `avenger-client` to `avenger-generator`. Fix it without changing any code in these services.
 
-   1. Read about the `@Value` annotation - https://www.baeldung.com/spring-value-annotation
+   1. Read about the `@ConfigProperty` annotation - https://quarkus.io/guides/config
    2. Override the default value provided by configuration file with environment variable
       - Hint: `TARGET_SERVER_URL="..." java -jar ...`
    3. Override the default value with the system property.
@@ -695,7 +695,7 @@ The outputs should now work correctly and the output of `avenger-client` should 
 
 Verify the task with `./verify-task08-03.sh`.
 
-4. Add Dockerfile to both services based on the `eclipse-temurin:17-jdk-alpine`. It might be the same as we used before. Just change the `EXPOSE` line to correct port 8081 in generator and 8080 in client.
+4. Locate the Dockerfiles for both services.
 
 5. Build the images to your local registry (`<username>/avenger-generator` and `<username/avenger-client`)
 
@@ -717,12 +717,6 @@ To pass environment variable into a container run you can define it with `-e ENV
 podman run --network host -e TARGET_SERVER_URL="..." xstefank/avenger-client
 ```
 
-Our base image `eclipse-temurin:17-jdk-alpine` also allows us to pass system properties with the `_JAVA_OPTIONS` environment variable. This is maybe a little meta but we are setting the system property to our Spring Boot application running it the container with the environment variable that is passed to the container itself.
-
-```shell
-podman run --network host -e _JAVA_OPTIONS="-Dtarget.server.url=http://..." xstefank/avenger-client  
-```
-
 Verify the task with `./verify-task08-07.sh`.
 
 8. Tag both images to `quay.io` namespace.
@@ -738,12 +732,12 @@ The `avenger-client` public URL won't work since the default target server URL i
 ![](images/deployedostask08.png)
 
 12. Fix the target URL in OpenShift deployment of `avenger-client`.
-- In the deployment click the deploymen name button `avenger-client` on the top.
+- In the deployment click the deployment name button `avenger-client` on the top.
 
 ![](images/deploymentButton.png)
 
 - Go to the `Environment` tab.
-- Into the `Single values (env)` section add either the `TARGET_SERVER_URL` or the `_JAVA_OPTIONS` environment variable accordingly. The `avenger-generator` is exposed on the URL that corresponds to the name of the service which exposes it. In our case it's the same `avenger-generator` (check it with `oc get svc`), so the target URL you want to set is `http://avenger-generator:8081/avenger/generate`.
+- Into the `Single values (env)` section add either the `TARGET_SERVER_URL` variable accordingly. The `avenger-generator` is exposed on the URL that corresponds to the name of the service which exposes it. In our case it's the same `avenger-generator` (check it with `oc get svc`), so the target URL you want to set is `http://avenger-generator:8081/avenger/generate`.
 
 ![](images/environmentversinos.png)
 
