@@ -52,11 +52,10 @@ Make several more calls, changing the message text. See the browser tab to displ
 
 ## Task 3 - call API from Swagger UI
 
-Open a new tab in your browser and visit there the URL http://localhost:8080/swagger-ui/index.html
-It displays a Swagger UI, a web page automatically generated from the document [openapi.yaml](https://gitlab.fi.muni.cz/makub/muni-chat-service/-/blob/main/openapi.yaml?plain=1).
+Open a new tab in your browser and visit there the URL http://localhost:8080/q/swagger-ui
+It displays a Swagger UI, a web page automatically generated from the document [openapi.yaml](http://localhost:8080/q/openapi).
 
-Click on the green rectangle titled "POST /api/messages". A page section for calling the operation appears.
-Fill a value in the text field for **author**, and change the value for the key "text" in the area for request body.
+Click on the rectangle titled "POST /api/messages". A page section for calling the operation appears. Click "Try it out" button and fill a value in the text field for **author**, and change the value for the key "text" in the area for request body.
 Click the big blue button titled **Execute**.
 
 A new message was created. Check it in the browser tab displaying all messages.
