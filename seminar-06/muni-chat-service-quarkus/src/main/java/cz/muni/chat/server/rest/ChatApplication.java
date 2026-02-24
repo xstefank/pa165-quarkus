@@ -32,7 +32,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
                         [cz.muni.chat.server.facade](https://github.com/martin-kuba/muni-chat-service/tree/main/chat-server/src/main/java/cz/muni/chat/server/facade)
                         package.
                         """,
-        contact = @Contact(name = "Martin Kuba", email = "makub@ics.muni.cz", url = "https://www.muni.cz/lide/3988-martin-kuba"),
+        contact = @Contact(name = "John Doe", email = "jdoe@ics.muni.cz", url = "https://www.muni.cz/lide/666-joe-doe"),
         license = @License(name = "Apache 2.0", url = "https://www.apache.org/licenses/LICENSE-2.0.html")
     ),
     servers = @Server(description = "my server", url = "{scheme}://{server}:{port}", variables = {

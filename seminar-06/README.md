@@ -11,14 +11,13 @@ Let's start with a working example which is prepared in the public GitLab reposi
 (thanks to Martin Kuba for providing this application which was transformed to Quarkus).
 Clone the repository into a local directory and build the project:
 ```bash
-git clone https://gitlab.fi.muni.cz/makub/muni-chat-service.git
-cd muni-chat-service/
+git clone https://github.com/xstefank/pa165-quarkus.git
+cd seminar-06/muni-chat-service-quarkus/
 mvn install
 ```
 Then start the server:
 ```bash
-cd chat-server
-mvn spring-boot:run
+./mvnw quarkus:dev
 ```
 and visit the URL http://localhost:8080/ with your browser.
 
