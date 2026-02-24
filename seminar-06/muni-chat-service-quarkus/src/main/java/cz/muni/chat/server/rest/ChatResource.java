@@ -95,7 +95,7 @@ public class ChatResource {
     )
     @POST
     @Path("/messages")
-    public ChatMessage createMessage(@Valid @RequestBody NewChatMessageRequest r,
+    public Response createMessage(@Valid @RequestBody NewChatMessageRequest r,
                                      @QueryParam("author") String author) {
         // default values for author and backgroundColor
         if (author == null) {
@@ -105,7 +105,7 @@ public class ChatResource {
         // create message
         StoredMessage message = chatService.createNewMessage(r.getText(), author, r.getTextColor(), bc.getValue());
         // return the created message
-        return ChatMessage.fromStoredMessage(message);
+        return Response.status(Response.Status.CREATED).entity(ChatMessage.fromStoredMessage(message)).build();
     }
 
     /**
