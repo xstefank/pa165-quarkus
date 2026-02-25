@@ -1,0 +1,31 @@
+openapi: 3.1.1
+info:
+  title: Pa165 Seminar OpenAPI Service
+  description: |
+    Hand-made OpenAPI document.
+  version: 1.0.0
+servers:
+  - url: "http://localhost:8080"
+tags:
+  - name: MyService
+    description: Tags are used for Java interface names
+components:
+  schemas: {}
+paths:
+  /api/hello:
+    get:
+      tags:
+        - MyService
+      summary: Returns "Hello World!"
+      operationId: hello
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                title: HelloResponse
+                properties:
+                  message:
+                    type: string

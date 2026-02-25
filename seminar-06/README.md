@@ -72,16 +72,16 @@ cannot communicate with each other.
 
 ## Task 5 - call API from generated Java code
 
-The project contains the module [chat-client-java](https://gitlab.fi.muni.cz/makub/muni-chat-service/-/tree/main/chat-client-java)
-that contains code in the class [Main](https://gitlab.fi.muni.cz/makub/muni-chat-service/-/blob/main/chat-client-java/src/main/java/cz/muni/chat/client/Main.java)
+The project contains the module [chat-client-java](https://github.com/xstefank/pa165-quarkus/tree/main/seminar-06/chat-client-java)
+that contains code in the class [Main](https://github.com/xstefank/pa165-quarkus/blob/main/seminar-06/chat-client-java/src/main/java/cz/muni/chat/client/Main.java)
 
 The module produces an executable JAR file, or can be run using Maven. Let's run it using Maven. In a terminal
 window, go to the directory `chat-client-java` and issue the command that runs the client application:
 ```bash
 cd chat-client-java
-mvn spring-boot:run
+./mvnw quarkus:dev
 ```
-Change the code in the Main.java file to create a new message and run it again.
+Change the code in the Main.java file to create a new message and run it again. Notice that command line application can be restarted in dev mode by pressing `space`.
 
 ## Task 6 - create your own service
 
