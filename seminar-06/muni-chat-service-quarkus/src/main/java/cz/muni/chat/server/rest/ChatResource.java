@@ -65,7 +65,7 @@ public class ChatResource {
     @Operation(
         summary = "Returns identified message",
         description = "Looks up a message by its id.")
-    @APIResponse(responseCode = "200", ref = "#/components/responses/SingleMessageResponse")
+    @APIResponse(responseCode = "200")
     @APIResponse(responseCode = "404", description = "message not found",
         content = @Content(schema = @Schema(implementation = ErrorMessage.class)))
     @GET
@@ -89,7 +89,7 @@ public class ChatResource {
             Receives data both in request body and as URL parameter and stores them as a new message.
             Returns the new message as its response.
             """)
-    @APIResponse(responseCode = "201", ref = "#/components/responses/SingleMessageResponse")
+    @APIResponse(responseCode = "201", description = "New message was created successfully")
     @APIResponse(responseCode = "400", description = "input data were not correct",
         content = @Content(schema = @Schema(implementation = ErrorMessage.class))
     )
