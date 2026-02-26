@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- this project -->
+    <groupId>cz.muni.pa165</groupId>
+    <artifactId>seminar-06</artifactId>
+    <version>0.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Parent project</name>
+    <description>Parent project for OpenAPI seminar</description>
+    <organization>
+        <name>Masaryk University</name>
+        <url>https://www.muni.cz/</url>
+    </organization>
+
+    <!-- modules aggregation (commands are done in them too)  -->
+    <modules>
+        <module>server</module>
+        <module>client</module>
+    </modules>
+
+    <!-- properties are inherited into children projects and can be used anywhere with ${property} -->
+    <properties>
+        <java.version>25</java.version>
+    </properties>
+
+    <build>
+        <!-- sets that "mvn" alone means "mvn install" -->
+        <defaultGoal>install</defaultGoal>
+    </build>
+
+</project>
+
